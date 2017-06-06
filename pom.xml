@@ -11,6 +11,7 @@
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <docker-base-image-name>treinamentos/rest-api</docker-base-image-name>
     </properties>
 
     <parent>
@@ -62,11 +63,58 @@
 
 
     <build>
+
+        <finalName>rest-api</finalName>
+
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+
+            <plugin>
+                <groupId>com.spotify</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>0.4.13</version>
+
+                <executions>
+                    <!--Build image from Dockerfile in package phase-->
+                    <execution>
+                        <id>build-image</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>build</goal>
+                        </goals>
+                    </execution>
+
+                    <!--Tagged image from actual version of project to latest-->
+                    <execution>
+                        <id>tag-image</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>tag</goal>
+                        </goals>
+                        <configuration>
+                            <image>${docker-base-image-name}:${project.version}</image>
+                            <newName>${docker-base-image-name}:latest</newName>
+                        </configuration>
+                    </execution>
+
+                </executions>
+
+                <configuration>
+                    <imageName>${docker-base-image-name}:${project.version}</imageName>
+                    <dockerDirectory>src/main/resources/docker</dockerDirectory>
+                    <resources>
+                        <resource>
+                            <targetPath>/</targetPath>
+                            <directory>${project.build.directory}</directory>
+                            <include>rest-api.${project.packaging}</include>
+                        </resource>
+                    </resources>
+                </configuration>
+            </plugin>
+
         </plugins>
     </build>
 </project>
