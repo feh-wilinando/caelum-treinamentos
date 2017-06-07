@@ -11,12 +11,12 @@ import javax.servlet.http.HttpServletRequest;
 @RestController
 public class HomeController {
 
-    @GetMapping("/")
+    @GetMapping("/who-are-you")
     public String home(HttpServletRequest request){
         return request.getLocalAddr() + "\n";
     }
 
-    @GetMapping("/busy")
+    @GetMapping("/")
     public String busy() throws InterruptedException {
 
         Thread.sleep(10000);
